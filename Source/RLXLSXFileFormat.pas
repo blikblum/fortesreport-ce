@@ -428,7 +428,7 @@ type
   TRLXLSXHashItem = packed record
     KeyLength: Word;
     KeyOffset: Word;
-    Data: Integer;
+    Data: TObject;
     Index: Integer;
   end;
 
@@ -494,12 +494,12 @@ begin
       FHeapSize := FHeapSize * 2;
     ReallocMem(FHeapPtr, FHeapSize);
   end;
-  Integer(ItemPtr) := Integer(FHeapPtr) + FHeapLength;
-  ItemPtr.Data := Integer(Data);
+  ItemPtr := PRLXLSXHashItem(FHeapPtr + FHeapLength);
+  ItemPtr.Data := Data;
   ItemPtr.KeyLength := Length(AnsiKey);
   Inc(FHeapLength, SizeOf(TRLXLSXHashItem));
   ItemPtr.KeyOffset := FHeapLength;
-  Move(AnsiKey[1], Pointer(Integer(FHeapPtr) + ItemPtr.KeyOffset)^, Length(AnsiKey));
+  Move(AnsiKey[1], Pointer(FHeapPtr + ItemPtr.KeyOffset)^, Length(AnsiKey));
   Inc(FHeapLength, Length(AnsiKey));
   FBuckets[BucketIndex].Add(ItemPtr);
   ItemPtr.Index := FItems.Count;
@@ -540,10 +540,10 @@ begin
     ItemPtr := Items[ItemIndex];
     if ItemPtr.KeyLength = Length(AnsiKey) then
     begin
-      Integer(StrPtr) := Integer(FHeapPtr) + ItemPtr.KeyOffset;
+      StrPtr := Pointer(FHeapPtr + ItemPtr.KeyOffset);
       if CompareMem(StrPtr, @AnsiKey[1], Length(AnsiKey)) then
       begin
-        Data := TObject(ItemPtr.Data);
+        Data := ItemPtr.Data;
         Index := ItemPtr.Index;
         Result := True;
         Exit;
