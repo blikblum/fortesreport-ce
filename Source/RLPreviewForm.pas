@@ -649,7 +649,7 @@ begin
     Width := 0;
     Parent := PanelContainer;
   end;
-  N.Tag := Integer(S);
+  N.Tag := NativeInt(S);
   FPreviewList.Add(N);
   if FPreviewList.Count > 1 then
     N.Pages := TRLPreview(FPreviewList[0]).Pages;
